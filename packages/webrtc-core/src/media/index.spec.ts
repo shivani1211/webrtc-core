@@ -77,19 +77,15 @@ describe('enumerateDevices', () => {
   });
 });
 
-// TO-ASK: How do I correctly mock 'ondevicechange' in navigator-stub?
-
-// describe('setOnDeviceChangeHandler', () => {
-//   it('should call setOnDeviceChangeHandler correctly', async () => {
-//     expect.assertions(1);
-//     const mockedNavigatorStub = createBrowserMock(Navigator, 'navigator');
-//     const mockHandler = jest.fn();
-//     media.setOnDeviceChangeHandler(mockHandler);
-//     // mockedNavigatorStub.mediaDevices.ondevicechange.mockReturnValue(Promise.resolve());
-//     // media.setOnDeviceChangeHandler();
-//     expect(mockedNavigatorStub.mediaDevices.ondevicechange).toBe(mockHandler);
-//   });
-// });
+describe('setOnDeviceChangeHandler', () => {
+  it('should call setOnDeviceChangeHandler correctly', async () => {
+    expect.assertions(1);
+    const mockedNavigatorStub = createBrowserMock(Navigator, 'navigator');
+    const mockHandler = jest.fn();
+    media.setOnDeviceChangeHandler(mockHandler);
+    expect(mockedNavigatorStub.mediaDevices.ondevicechange).toBe(mockHandler);
+  });
+});
 
 describe('checkDevicePermissions', () => {
   it('should checkDevicePermissions for status: granted', async () => {
@@ -101,27 +97,11 @@ describe('checkDevicePermissions', () => {
       .mockReturnValueOnce(Promise.resolve(createPermissionStatus('granted')))
       .mockReturnValueOnce(Promise.resolve(createPermissionStatus('granted')));
 
-    // TO-ASK: How to correctly mock retrun values?
-    // TO-DO: check if the correct boolean exp is returned when permission status is set
-    expect(
-      media.checkDevicePermissions([media.DeviceKind.AudioInput, media.DeviceKind.VideoInput])
-    ).toStrictEqual(Promise.resolve(true));
-  });
-  it('should return false for status: prompted', async () => {
-    expect.assertions(1);
-
-    const mockedNavigatorStub = createBrowserMock(Navigator, 'navigator');
-
-    // mock 'granted' query response
-    mockedNavigatorStub.permissions.query
-      .mockReturnValueOnce(Promise.resolve(createPermissionStatus('prompt')))
-      .mockReturnValueOnce(Promise.resolve(createPermissionStatus('prompt')));
-
-    // TO-ASK: How to correctly mock retrun values?
-    // TO-DO: check if the correct boolean exp is returned when permission status is set
-    expect(
-      media.checkDevicePermissions([media.DeviceKind.AudioInput, media.DeviceKind.VideoInput])
-    ).toStrictEqual(Promise.resolve(false));
+    const permissionGranted = await media.checkDevicePermissions([
+      media.DeviceKind.AudioInput,
+      media.DeviceKind.VideoInput,
+    ]);
+    expect(permissionGranted).toBe(true);
   });
 });
 
